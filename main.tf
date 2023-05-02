@@ -1,37 +1,37 @@
 #variabel
-locals{
-    Ressource_Group_Name = "amir-rg"
-    Ressource_Group_Location = "West Europe"
+locals {
+  Ressource_Group_Name     = "amir-rg"
+  Ressource_Group_Location = "West Europe"
 }
 
 #Erstellen Resource Grpoup
 resource "azurerm_resource_group" "rg-amir" {
-   name = local.Ressource_Group_Name
-   location = local.Ressource_Group_Location
-   }
- # Public IP
+  name     = local.Ressource_Group_Name
+  location = local.Ressource_Group_Location
+}
+# Public IP
 resource "azurerm_public_ip" "Public-ip" {
   name                = "Public-ip"
   resource_group_name = local.Ressource_Group_Name
   location            = local.Ressource_Group_Location
   allocation_method   = "Static"
-  
-} 
- #Vertual Network
-  resource "azurerm_virtual_network" "amir-vnet" {
+
+}
+#Vertual Network
+resource "azurerm_virtual_network" "amir-vnet" {
   name                = "amir-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = local.Ressource_Group_Location
   resource_group_name = local.Ressource_Group_Name
 }
 #sshkey erstellen
-  resource "azurerm_ssh_public_key" "sshkey" {
+resource "azurerm_ssh_public_key" "sshkey" {
   name                = "sshkey"
   location            = local.Ressource_Group_Location
   resource_group_name = local.Ressource_Group_Name
   public_key          = file("./sshkey.pub")
   //public_key = file("~/.ssh/id_rsa.pub")
- }
+}
 #Subnet 
 resource "azurerm_subnet" "amir-subnet" {
   name                 = "amir-subnet"
@@ -60,7 +60,7 @@ resource "azurerm_network_security_group" "amir-nsg" {
   location            = local.Ressource_Group_Location
   resource_group_name = local.Ressource_Group_Name
 
-   #Security Ruls
+  #Security Ruls
   security_rule {
     name                       = "allow_ssh_sg"
     priority                   = 100
@@ -111,18 +111,18 @@ resource "azurerm_linux_virtual_machine" "amir-vm" {
   location            = local.Ressource_Group_Location
   size                = "Standard_B1s"
   admin_username      = "azureuser"
-  
-   network_interface_ids = [
-    azurerm_network_interface.amir-nic.id,]
 
-#sshkey erstellen
- admin_ssh_key {
-  username = "azureuser"
-  public_key = azurerm_ssh_public_key.sshkey.public_key
-}
+  network_interface_ids = [
+  azurerm_network_interface.amir-nic.id, ]
+
+  #sshkey erstellen
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = azurerm_ssh_public_key.sshkey.public_key
+  }
 
 
- os_disk {
+  os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
