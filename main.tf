@@ -1,15 +1,15 @@
-#variabel
+#Variabelen
 locals {
   Ressource_Group_Name     = "amir-rg"
   Ressource_Group_Location = "West Europe"
 }
 
-#Erstellen Resource Grpoup
+# Resource Grpoup Erstellen
 resource "azurerm_resource_group" "rg-amir" {
   name     = local.Ressource_Group_Name
   location = local.Ressource_Group_Location
 }
-# Public IP
+# Public IP Erstellen
 resource "azurerm_public_ip" "Public-ip" {
   name                = "Public-ip"
   resource_group_name = local.Ressource_Group_Name
@@ -17,22 +17,17 @@ resource "azurerm_public_ip" "Public-ip" {
   allocation_method   = "Static"
 
 }
-#Vertual Network
+# Vertual Network Erstellen
 resource "azurerm_virtual_network" "amir-vnet" {
   name                = "amir-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = local.Ressource_Group_Location
   resource_group_name = local.Ressource_Group_Name
 }
-#sshkey erstellen
-resource "azurerm_ssh_public_key" "sshkey" {
-  name                = "sshkey"
-  location            = local.Ressource_Group_Location
-  resource_group_name = local.Ressource_Group_Name
-  public_key          = file("./sshkey.pub")
-  //public_key = file("~/.ssh/id_rsa.pub")
+#sshkey Erstellen
+Erstellen
 }
-#Subnet 
+#Subnet Erstellen 
 resource "azurerm_subnet" "amir-subnet" {
   name                 = "amir-subnet"
   resource_group_name  = local.Ressource_Group_Name
@@ -40,7 +35,7 @@ resource "azurerm_subnet" "amir-subnet" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-#Network interface 
+#Network interface Erstellen
 resource "azurerm_network_interface" "amir-nic" {
   name                = "amir-nic"
   location            = local.Ressource_Group_Location
@@ -60,7 +55,7 @@ resource "azurerm_network_security_group" "amir-nsg" {
   location            = local.Ressource_Group_Location
   resource_group_name = local.Ressource_Group_Name
 
-  #Security Ruls
+  #Security Ruls difinieren
   security_rule {
     name                       = "allow_ssh_sg"
     priority                   = 100
@@ -121,12 +116,12 @@ resource "azurerm_linux_virtual_machine" "amir-vm" {
     public_key = azurerm_ssh_public_key.sshkey.public_key
   }
 
-
+# Eigenschaften der Betriebssystemfestplatte (OS Disk)
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-
+# Mit diesen Eigenschaften wird Terraform das entsprechende Image identifizieren und für die Bereitstellung der Ressource verwenden
   source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
