@@ -1,46 +1,67 @@
 name: 'Terraform'
 
+# Der Workflow wird ausgelöst, wenn ein Push auf den Branch "main" erfolgt oder wenn ein Pull Request geöffnet wird.
 on:
   push:
     branches:
     - main
   pull_request:
-
+  
+   # Defination einen Job mit dem Namen 'Terraform' in einer 
 jobs:
   terraform:
     name: 'Terraform'
+    
+   # env (Enviroment) Umgebungsvariablen Umgebungsvariablen sind Variablen, die während der Ausführung des Jobs verfügbar sind und bestimmte Werte enthalten können 
     env:
+     # Die Verwendung dieser Umgebungsvariable "ARM_CLIENT_ID",ermöglicht es Terraform, auf die Azure-Cloud zuzugreifen und die entsprechenden Berechtigungen zu erhalten,
+     # um Infrastrukturänderungen vorzunehmen
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      
+     # Die Umgebungsvariable ARM_CLIENT_SECRET enthält also das Azure AD-Clientgeheimnis, das normalerweise zum Authentifizieren von Anwendungen und Diensten gegenüber 
+     # Azure Active Directory verwendet wird.
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      
+     # Die Umgebungsvariable ARM_SUBSCRIPTION_ID enthält also die Azure-Abonnement-ID. Das Azure-Abonnement ist die grundlegende Einheit, mit der Ressourcen in der Azure-Cloud 
+     # organisiert und verwaltet werden.
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+     # Die Umgebungsvariable ARM_TENANT_ID enthält die Azure AD-Mandanten-ID. Azure AD (Azure Active Directory) ist ein Verzeichnisdienst von Microsoft, der für die Verwaltung 
+     # von Identitäten und den Zugriff auf Azure-Ressourcen verwendet wird.
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     runs-on: ubuntu-latest
     environment: production
 
-    #  Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    #  Verwendung die Bash-Shell, unabhängig davon, ob der GitHub Actions-Runner ubuntu-latest, macos-latest oder windows-latest ist.
     defaults:
       run:
         shell: bash
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
+    # Das Repository auf den GitHub Actions Runner auschecken.
     - name: Checkout
       uses: actions/checkout@v2
-
+     
+     #Der Schritt führt also Terraform im Formatierungsmodus aus, um sicherzustellen, dass die Terraform-Konfigurationsdateien entsprechend
+     # den Style-Guidelines formatiert sind
     - name: 'Terraform Format'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 0.14.8
         tf_actions_subcommand: 'fmt'
         tf_actions_working_dir: "."
-
+        
+      # Dieser Schritt in einer GitHub Actio verwendet das GitHub Actions-Plugin hashicorp/terraform-github-actions von HashiCorp, 
+      # um den "terraform init" Befehl auszuführen.
     - name: 'Terraform Init'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 0.14.8
         tf_actions_subcommand: 'init'
         tf_actions_working_dir: "."
-
+        
+     # Dieser Schritt in einer GitHub Action verwendet das GitHub Actions-Plugin hashicorp/terraform-github-actions 
+     # von HashiCorp, um den terraform validate Befehl auszuführen.
     - name: 'Terraform Validate'
       uses: hashicorp/terraform-github-actions@master
       with:
@@ -48,13 +69,17 @@ jobs:
         tf_actions_subcommand: 'validate'
         tf_actions_working_dir: "."
 
+   # Dieser Schritt in einer GitHub Action verwendet das GitHub Actions-Plugin hashicorp/terraform-github-actions von HashiCorp, 
+   # um den terraform plan Befehl auszuführen.
     - name: 'Terraform Plan'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 0.14.8
         tf_actions_subcommand: 'plan'
         tf_actions_working_dir: "."
-
+        
+   # Dieser Schritt in einer GitHub Action mit dem Namen 'Terraform Apply' verwendet das GitHub Actions-Plugin hashicorp/terraform-github-actions von HashiCorp,
+   # um den terraform apply Befehl auszuführen.
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main'
       uses: hashicorp/terraform-github-actions@master
