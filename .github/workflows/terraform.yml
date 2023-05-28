@@ -7,7 +7,7 @@ on:
     - main
   pull_request:
   
-   # Defination einen Job mit dem Namen 'Terraform' in einer 
+   # Defination einen Job mit dem Namen 'Terraform' 
 jobs:
   terraform:
     name: 'Terraform'
