@@ -24,8 +24,7 @@ resource "azurerm_virtual_network" "amir-vnet" {
   location            = local.Ressource_Group_Location
   resource_group_name = local.Ressource_Group_Name
 }
-#sshkey Erstellen
-Erstellen
+
 }
 #Subnet Erstellen 
 resource "azurerm_subnet" "amir-subnet" {
